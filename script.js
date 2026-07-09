@@ -34,31 +34,35 @@ const cartCount = document.getElementById("cart-count");
 const cartTotal = document.getElementById("cart-total");
 const filterButtons = document.querySelectorAll(".filter-btn");
 
-// App Initialization Stream
+// Updated App Initialization Sequence
 async function initStore() {
-  // Sync cart across pages
+  // 1. Sync cart storage
   if (sessionStorage.getItem("catStoreCart")) {
     cart = JSON.parse(sessionStorage.getItem("catStoreCart"));
     updateCartUI();
   }
 
-  // Pull inventory collections from the Firestore Database
+  // 2. Fetch inventory collections and WAIT completely until done
   try {
+    console.log("Starting Firestore fetch..."); // Debug line
     const querySnapshot = await getDocs(collection(db, "products"));
     products = [];
     querySnapshot.forEach((doc) => {
       products.push({ id: doc.id, ...doc.data() });
     });
+    console.log("Successfully loaded products array:", products); // Debug line
 
+    // 3. ONLY run page display logic after the data is fully loaded!
     if (productsContainer) {
       displayProducts("all");
     }
 
     if (document.getElementById("detail-title")) {
+      console.log("On detail page. Attempting to parse URL parameters..."); // Debug line
       loadProductDetailPage();
     }
   } catch (error) {
-    console.error("Error connecting or downloading database values: ", error);
+    console.error("Firestore loading error:", error);
     if (productsContainer) {
       productsContainer.innerHTML =
         '<p style="color:red; font-weight:bold;">Failed to read catalog entries.</p>';
@@ -120,7 +124,9 @@ window.goToDetails = function (productId) {
 function loadProductDetailPage() {
   const urlParams = new URLSearchParams(window.location.search);
   const productId = urlParams.get("id");
-  const product = products.find((p) => p.id === productId);
+  const product = products.find(
+    (p) => String(p.id).trim() === String(productId).trim(),
+  );
 
   if (!product) {
     document.querySelector(".detail-container").innerHTML =

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Purrfect Bites | Shop Products</title>
+    <title>Purrfect Bites | Product Details</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -22,18 +22,27 @@
         </div>
     </header>
 
-    <section class="container">
-        <aside class="filters">
-            <h3>Categories</h3>
-            <button class="filter-btn active" data-filter="all">All Food</button>
-            <button class="filter-btn" data-filter="dry">Dry Kibble</button>
-            <button class="filter-btn" data-filter="wet">Wet/Canned</button>
-            <button class="filter-btn" data-filter="treats">Treats</button>
-        </aside>
+    <main class="detail-container">
+        <div class="gallery-container">
+            <div class="main-image-display" id="main-image-display">
+            </div>
+            <div class="thumbnail-scroll" id="thumbnail-scroll">
+            </div>
+        </div>
 
-        <main class="products-grid" id="products-container">
-        </main>
-    </section>
+        <div class="detail-info-box">
+            <h1 id="detail-title">Product Name</h1>
+            <div class="detail-price" id="detail-price">$0.00</div>
+            <p class="detail-description" id="detail-description">
+                Loading descriptive ingredients and nutritional info from database...
+            </p>
+
+            <div class="detail-actions">
+                <button class="add-btn" id="detail-add-btn">Add to Cart</button>
+                <a href="products.html" class="back-link">← Back to Shop</a>
+            </div>
+        </div>
+    </main>
 
     <div class="cart-sidebar" id="cart-sidebar">
         <div class="cart-header">
