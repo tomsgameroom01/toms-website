@@ -6,7 +6,7 @@ import {
   getDocs,
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// 2. Your Web App's Firebase Configuration (Replace with your actual keys from Console Settings)
+// 2. Your Web App's Firebase Configuration (Replace with your actual keys)
 const firebaseConfig = {
   apiKey: "AIzaSyAUjmoztsphbq5Np81Mwf2fS-b8UxjrjWY",
   authDomain: "tph-website-c3e61.firebaseapp.com",
@@ -16,11 +16,11 @@ const firebaseConfig = {
   appId: "1:503878800624:web:2f40248759d8e27cc0de35",
 };
 
-// Initialize Connection Architecture
+// Initialize Firebase & Firestore
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// State Arrays
+// Global State Management
 let products = [];
 let cart = [];
 
@@ -34,15 +34,15 @@ const cartCount = document.getElementById("cart-count");
 const cartTotal = document.getElementById("cart-total");
 const filterButtons = document.querySelectorAll(".filter-btn");
 
-// System Entry Initialization
+// App Initialization Stream
 async function initStore() {
-  // Synchronize cross-page persistence
+  // Sync cart across pages
   if (sessionStorage.getItem("catStoreCart")) {
     cart = JSON.parse(sessionStorage.getItem("catStoreCart"));
     updateCartUI();
   }
 
-  // Call Collection Stream from Firestore Database
+  // Pull inventory collections from the Firestore Database
   try {
     const querySnapshot = await getDocs(collection(db, "products"));
     products = [];
@@ -68,7 +68,7 @@ async function initStore() {
   setupEventListeners();
 }
 
-// Render product item catalogs dynamically
+// Render catalog display grid items on shop front
 function displayProducts(categoryFilter) {
   if (!productsContainer) return;
 
@@ -82,11 +82,17 @@ function displayProducts(categoryFilter) {
     const productCard = document.createElement("div");
     productCard.className = "product-card";
 
+    // Pull the 'emoji' string value out to serve as thumbnail file source path
+    const thumbnailSrc = product.emoji || "";
     const isImgLink =
-      product.emoji.startsWith("http") || product.emoji.startsWith("images/");
+      typeof thumbnailSrc === "string" &&
+      (thumbnailSrc.startsWith("http") ||
+        thumbnailSrc.startsWith("images/") ||
+        thumbnailSrc.startsWith("asset/"));
+
     const imgContent = isImgLink
-      ? `<img src="${product.emoji}" alt="${product.name}" style="width:100%; height:100%; object-fit:cover;">`
-      : product.emoji;
+      ? `<img src="${thumbnailSrc}" alt="${product.name}" style="width:100%; height:100%; object-fit:cover;">`
+      : thumbnailSrc;
 
     productCard.innerHTML = `
             <div style="cursor:pointer;" onclick="goToDetails('${product.id}')">
@@ -104,11 +110,13 @@ function displayProducts(categoryFilter) {
   });
 }
 
+// Explicit global assignment for detail page route redirection
 window.goToDetails = function (productId) {
+  if (!productId) return;
   window.location.href = `product-detail.html?id=${productId}`;
 };
 
-// Populate the Product Detail View structure layout
+// Build Dynamic Product Single View Layout Page
 function loadProductDetailPage() {
   const urlParams = new URLSearchParams(window.location.search);
   const productId = urlParams.get("id");
@@ -120,6 +128,7 @@ function loadProductDetailPage() {
     return;
   }
 
+  // Bind item text properties
   document.getElementById("detail-title").textContent = product.name;
   document.getElementById("detail-price").textContent =
     `$${Number(product.price).toFixed(2)}`;
@@ -132,20 +141,29 @@ function loadProductDetailPage() {
   const thumbScroll = document.getElementById("thumbnail-scroll");
 
   const getImageMarkup = (src) => {
-    return src.startsWith("http") || src.startsWith("images/")
+    return src.startsWith("http") ||
+      src.startsWith("images/") ||
+      src.startsWith("asset/")
       ? `<img src="${src}" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">`
       : src;
   };
 
-  if (product.images && product.images.length > 0) {
-    mainDisplay.innerHTML = getImageMarkup(product.images[0]);
+  // Grab the array field named 'image' out from your document snapshot fields
+  const galleryImages = product.image || [];
+
+  if (galleryImages.length > 0) {
+    mainDisplay.innerHTML = getImageMarkup(galleryImages[0]);
     thumbScroll.innerHTML = "";
 
-    product.images.forEach((img, index) => {
+    galleryImages.forEach((img, index) => {
       const thumb = document.createElement("div");
       thumb.className = `thumb-box ${index === 0 ? "active-thumb" : ""}`;
 
-      if (img.startsWith("http") || img.startsWith("images/")) {
+      if (
+        img.startsWith("http") ||
+        img.startsWith("images/") ||
+        img.startsWith("asset/")
+      ) {
         thumb.innerHTML = `<img src="${img}" style="width:100%; height:100%; object-fit:cover; border-radius:6px;">`;
       } else {
         thumb.textContent = img;
@@ -161,11 +179,11 @@ function loadProductDetailPage() {
       thumbScroll.appendChild(thumb);
     });
   } else {
-    mainDisplay.innerHTML = getImageMarkup(product.emoji);
+    mainDisplay.innerHTML = getImageMarkup(product.emoji || "");
   }
 }
 
-// Cart Controller Actions
+// Add Item to Shopping Cart
 window.addToCart = function (productId) {
   const product = products.find((p) => p.id === productId);
   const existingItem = cart.find((item) => item.id === productId);
@@ -180,6 +198,7 @@ window.addToCart = function (productId) {
   updateCartUI();
 };
 
+// Increment Cart Qty (+)
 window.increaseQuantity = function (productId) {
   const item = cart.find((item) => item.id === productId);
   if (item) {
@@ -189,6 +208,7 @@ window.increaseQuantity = function (productId) {
   }
 };
 
+// Decrement Cart Qty (-)
 window.decreaseQuantity = function (productId) {
   const item = cart.find((item) => item.id === productId);
   if (item) {
@@ -202,12 +222,14 @@ window.decreaseQuantity = function (productId) {
   }
 };
 
+// Remove item stack completely from array (🗑️)
 window.removeFromCart = function (productId) {
   cart = cart.filter((item) => item.id !== productId);
   saveCart();
   updateCartUI();
 };
 
+// Redraw Cart Sidebar Visual States
 function updateCartUI() {
   if (!cartItemsContainer || !cartCount || !cartTotal) return;
 
@@ -249,7 +271,7 @@ function saveCart() {
   sessionStorage.setItem("catStoreCart", JSON.stringify(cart));
 }
 
-// Build WhatsApp Direct Chat Link Integration API strings
+// Assemble text details and link straight out to WhatsApp API
 window.sendWhatsAppOrder = function () {
   if (cart.length === 0) {
     alert("Your cart is empty! Add some cat food before checking out.");
