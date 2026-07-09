@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purrfect Bites | Shop Products</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">🐱 Purrfect Bites</div>
+        <nav class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="products.html" class="active-nav">Products</a>
+            <a href="about.html">About Us</a>
+        </nav>
+        <div class="cart-icon" id="cart-toggle">
+            🛒 Cart (<span id="cart-count">0</span>)
+        </div>
+    </header>
+
+    <section class="container">
+        <aside class="filters">
+            <h3>Categories</h3>
+            <button class="filter-btn active" data-filter="all">All Food</button>
+            <button class="filter-btn" data-filter="dry">Dry Kibble</button>
+            <button class="filter-btn" data-filter="wet">Wet/Canned</button>
+            <button class="filter-btn" data-filter="treats">Treats</button>
+        </aside>
+
+        <main class="products-grid" id="products-container">
+        </main>
+    </section>
+
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h3>Your Cart</h3>
+            <button id="close-cart">✕</button>
+        </div>
+        <div class="cart-items" id="cart-items">
+        </div>
+        <div class="cart-footer">
+            <div class="total-price">Total: $<span id="cart-total">0.00</span></div>
+            <button class="checkout-btn" onclick="sendWhatsAppOrder()">I got my orders ready, send via WhatsApp
+                💬</button>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+
+</html>

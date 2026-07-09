@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purrfect Bites | Premium Cat Food Store</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">🐱 Purrfect Bites</div>
+        <nav class="nav-links">
+            <a href="index.html" class="active-nav">Home</a>
+            <a href="products.html">Products</a>
+            <a href="about.html">About Us</a>
+        </nav>
+        <div class="cart-icon" id="cart-toggle">
+            🛒 Cart (<span id="cart-count">0</span>)
+        </div>
+    </header>
+
+    <section class="hero-section">
+        <h1>Welcome to Purrfect Bites</h1>
+        <p>Only the finest ingredients for your feline friends.</p>
+        <a href="products.html" class="shop-now-btn">Shop Our Food</a>
+    </section>
+
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h3>Your Cart</h3>
+            <button id="close-cart">✕</button>
+        </div>
+        <div class="cart-items" id="cart-items">
+        </div>
+        <div class="cart-footer">
+            <div class="total-price">Total: $<span id="cart-total">0.00</span></div>
+            <button class="checkout-btn" onclick="sendWhatsAppOrder()">I got my orders ready, send via WhatsApp
+                💬</button>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+
+</html>
